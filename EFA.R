@@ -52,3 +52,32 @@ print(tf$loadings,cutoff = 0.3)
 
 # look at the factor mapping
 fa.diagram(tf)
+
+
+# GLM analysis ####
+library(tidyverse)
+library(glmnet)
+library(report)
+library(MuMIn)
+
+#load data
+data <- read.csv()
+
+# modif dataset dengan mengubah role menjadi factor dan sisanya con.standardize
+datas <- data %>% mutate(Role = as.factor(Role)) %>%
+  mutate(across(.cols = 4:12, .fns = scale))
+
+# global model
+#model_global <- glm(Role ~ demografi + persepsi + perilaku + niat + resiko + ternak + muncul + konsumsi + pengetahuan, 
+#             data = datas,
+#             family = "binomial")
+# gunakan model diatas untuk melihat model tunggal dari best model hasil dredging
+
+
+model_global <- glm(Role ~ demografi + persepsi + perilaku + niat + resiko + ternak + muncul + konsumsi + pengetahuan, 
+                    data = datas,
+                    family=binomial(logit),
+                    na.action = "na.fail")
+
+mod_dredge <- dredge(model_global)
+
